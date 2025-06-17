@@ -15,6 +15,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -28,18 +29,25 @@ fun Game() {
     var showPaperButton by remember { mutableStateOf(true) }
     var showScissorsButton by remember { mutableStateOf(true) }
 
+    var showCPUsChoice by remember { mutableStateOf(false) }
+
     Box(modifier = Modifier.fillMaxSize().background(Color.Black), contentAlignment = Alignment.Center) {
 
         Column {
-            Text(modifier = Modifier, text = cpuChoice, fontSize = 50.sp, color = Color.Blue)
+
+            if (showCPUsChoice) {
+                Text(modifier = Modifier, text = cpuChoice, fontSize = 50.sp, color = Color.Blue)
+            }
 
             if (showRockButton) {
                 Button(onClick = {
                     playerChoice = "Rock"
 
-                    showRockButton = false
+                    showRockButton = true
                     showPaperButton = false
                     showScissorsButton = false
+
+                    showCPUsChoice = true
                 },
 
                     colors = ButtonDefaults.buttonColors(
@@ -51,23 +59,43 @@ fun Game() {
                 }
             }
 
-            Button(onClick = { playerChoice = "Paper" },
+            if (showPaperButton) {
+                Button(onClick = {
+                    playerChoice = "Paper"
+
+                    showRockButton = false
+                    showPaperButton = true
+                    showScissorsButton = false
+
+                    showCPUsChoice = true
+                },
+
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF000033),
                     contentColor = Color.Blue
                 )) {
 
                 Text(modifier = Modifier, text = "Paper", fontSize = 50.sp, color = Color.Blue)
-            }
+            }}
 
-            Button(onClick = { playerChoice = "Scissors" },
+                if (showScissorsButton) {
+                    Button(onClick = {
+                        playerChoice = "Scissors"
+
+                        showRockButton = false
+                        showPaperButton = false
+                        showScissorsButton = true
+
+                        showCPUsChoice = true
+                    },
+
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF000033),
                     contentColor = Color.Blue
                 )) {
 
                 Text(modifier = Modifier, text = "Scissors", fontSize = 50.sp, color = Color.Blue)
-            }
+            }}
 
             // Game Logic Section.
             // Game Logic For The CPU-s Choice 'Rock'.
