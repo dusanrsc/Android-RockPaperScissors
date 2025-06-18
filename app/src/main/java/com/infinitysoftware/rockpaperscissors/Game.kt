@@ -1,12 +1,16 @@
 package com.infinitysoftware.rockpaperscissors
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -15,13 +19,28 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.LineHeightStyle
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+// Custom Made Preview Composable Functions Section.
+@Preview(showBackground = true)
 @Composable
-fun Game() {
+fun FunctionPreviewer() {
+    Game()
+}
 
-    val choiceList = listOf("Rock", "Paper", "Scissors")
+// Custom Made Composable Functions Section.
+@Composable
+fun Game(defaultFontSize: TextUnit = 30.sp, defaultCPUChoiceImageSize: Dp = 200.dp, defaultPlayerChoiceImageSize: Dp = 100.dp) {
+
+    // Game Settings Section.
+    // Variable/Constants Section.
+    val choiceList = listOf(R.drawable.rock, R.drawable.paper, R.drawable.scissors)
     var cpuChoice by remember { mutableStateOf(choiceList.random()) }
     var playerChoice by remember { mutableStateOf("") }
 
@@ -29,98 +48,96 @@ fun Game() {
     var showPaperButton by remember { mutableStateOf(true) }
     var showScissorsButton by remember { mutableStateOf(true) }
 
-    var showCPUsChoice by remember { mutableStateOf(false) }
+    val screenWidth = LocalConfiguration.current.screenWidthDp.dp
+    val CPUImageSize = screenWidth / 2
+    val PlayerImageSize = screenWidth / 4
 
-    Box(modifier = Modifier.fillMaxSize().background(Color.Black), contentAlignment = Alignment.Center) {
+    Column(modifier = Modifier.fillMaxSize()) {
 
-        Column {
-
-            if (showCPUsChoice) {
-                Text(modifier = Modifier, text = cpuChoice, fontSize = 50.sp, color = Color.Blue)
-            }
-
-            if (showRockButton) {
-                Button(onClick = {
-                    playerChoice = "Rock"
-
-                    showRockButton = true
-                    showPaperButton = false
-                    showScissorsButton = false
-
-                    showCPUsChoice = true
-                },
-
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFF000033),
-                        contentColor = Color.Blue
-                    )) {
-
-                    Text(modifier = Modifier, text = "Rock", fontSize = 50.sp, color = Color.Blue)
+        // Top Half Of The Screen.
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
+                .background(Color.Red)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                if (playerChoice == "") {
+                    Image(
+                        painter = painterResource(id = R.drawable.background),
+                        contentDescription = "CPUs Choice!",
+                        modifier = Modifier.size(CPUImageSize)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = cpuChoice),
+                        contentDescription = "CPUs Choice!",
+                        modifier = Modifier.size(CPUImageSize)
+                    )
                 }
             }
+        }
 
-            if (showPaperButton) {
-                Button(onClick = {
-                    playerChoice = "Paper"
+        // Bottom Half Of The Screen.
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth().background(Color.Blue)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (showRockButton) {
+                    Image(
+                        painter = painterResource(id = R.drawable.rock),
+                        contentDescription = "Rock",
+                        modifier = Modifier.size(PlayerImageSize)
 
-                    showRockButton = false
-                    showPaperButton = true
-                    showScissorsButton = false
+                            .clickable{ playerChoice = "Rock"
+                                showRockButton = true
+                                showPaperButton = false
+                                showScissorsButton = false
+                            }
+                    )
+                }
 
-                    showCPUsChoice = true
-                },
+                if (showPaperButton) {
+                    Image(
+                        painter = painterResource(id = R.drawable.paper),
+                        contentDescription = "Paper",
+                        modifier = Modifier.size(PlayerImageSize)
 
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF000033),
-                    contentColor = Color.Blue
-                )) {
-
-                Text(modifier = Modifier, text = "Paper", fontSize = 50.sp, color = Color.Blue)
-            }}
+                            .clickable{ playerChoice = "Paper"
+                                showRockButton = false
+                                showPaperButton = true
+                                showScissorsButton = false
+                            }
+                    )
+                }
 
                 if (showScissorsButton) {
-                    Button(onClick = {
-                        playerChoice = "Scissors"
+                    Image(
+                        painter = painterResource(id = R.drawable.scissors),
+                        contentDescription = "Scissors",
+                        modifier = Modifier.size(PlayerImageSize)
 
-                        showRockButton = false
-                        showPaperButton = false
-                        showScissorsButton = true
-
-                        showCPUsChoice = true
-                    },
-
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color(0xFF000033),
-                    contentColor = Color.Blue
-                )) {
-
-                Text(modifier = Modifier, text = "Scissors", fontSize = 50.sp, color = Color.Blue)
-            }}
-
-            // Game Logic Section.
-            // Game Logic For The CPU-s Choice 'Rock'.
-            if (playerChoice == "Rock" && cpuChoice == "Rock") {
-                Text(modifier = Modifier, text = itsTieMessage, fontSize = 50.sp, color = Color.Blue)
-            } else if (playerChoice == "Paper" && cpuChoice == "Rock") {
-                Text(modifier = Modifier, text = playerWinMessage, fontSize = 50.sp, color = Color.Blue)
-            } else if (playerChoice == "Scissors" && cpuChoice == "Rock") {
-                Text(modifier = Modifier, text = cpuWinMessage, fontSize = 50.sp, color = Color.Blue)
-
-                // Game Logic For The CPU-s Choice 'Paper'.
-            } else if (playerChoice == "Rock" && cpuChoice == "Paper") {
-                Text(modifier = Modifier, text = cpuWinMessage, fontSize = 50.sp, color = Color.Blue)
-            } else if (playerChoice == "Paper" && cpuChoice == "Paper") {
-                Text(modifier = Modifier, text = itsTieMessage, fontSize = 50.sp, color = Color.Blue)
-            } else if (playerChoice == "Scissors" && cpuChoice == "Paper") {
-                Text(modifier = Modifier, text = playerWinMessage, fontSize = 50.sp, color = Color.Blue)
-
-                // Game Logic For The CPU-s Choice 'Scissros'.
-            } else if (playerChoice == "Rock" && cpuChoice == "Scissors") {
-                Text(modifier = Modifier, text = playerWinMessage, fontSize = 50.sp, color = Color.Blue)
-            } else if (playerChoice == "Paper" && cpuChoice == "Scissors") {
-                Text(modifier = Modifier, text = cpuWinMessage, fontSize = 50.sp, color = Color.Blue)
-            } else if (playerChoice == "Scissors" && cpuChoice == "Scissors") {
-                Text(modifier = Modifier, text = itsTieMessage, fontSize = 50.sp, color = Color.Blue)
+                            .clickable{ playerChoice = "Scissors"
+                                showRockButton = false
+                                showPaperButton = false
+                                showScissorsButton = true
+                            }
+                    )
+                }
             }
         }
     }

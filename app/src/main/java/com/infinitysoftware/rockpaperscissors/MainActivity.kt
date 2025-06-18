@@ -9,10 +9,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.infinitysoftware.rockpaperscissors.ui.theme.RockPaperScissorsTheme
 
-val cpuWinMessage: String = "CPU Win!"
-val playerWinMessage: String = "Player Win!"
-val itsTieMessage: String = "Its Tie!"
-
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
