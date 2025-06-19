@@ -28,6 +28,8 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+// Global Variables/Constants Settings Section.
+// Messages Section!
 val itsTieMessage: String = "ITS TIE!"
 val playerWinMessage: String = "PLAYER WIN!"
 val cpuWinMessage: String = "CPU WIN!"
