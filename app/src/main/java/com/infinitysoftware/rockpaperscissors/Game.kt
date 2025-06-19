@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -26,6 +27,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+
+val itsTieMessage: String = "ITS TIE!"
+val playerWinMessage: String = "PLAYER WIN!"
+val cpuWinMessage: String = "CPU WIN!"
 
 // Custom Made Preview Composable Functions Section.
 @Preview(showBackground = true)
@@ -81,6 +86,33 @@ fun Game(defaultFontSize: TextUnit = 30.sp, defaultCPUChoiceImageSize: Dp = 200.
                         modifier = Modifier.size(CPUImageSize)
                     )
                 }
+            }
+        }
+
+        if (playerChoice == "") {
+            Box(modifier = Modifier.fillMaxWidth()
+                .background(color = Color.White),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(text = "UNDEFINED WINNER!", fontSize = defaultFontSize, color = Color.White)
+            }
+        } else {
+            Box(modifier = Modifier.fillMaxWidth()
+                .background(color = Color.White),
+                contentAlignment = Alignment.Center
+            ) {
+                // Game Logic.
+                // Its Tie Game Logic.
+                if (playerChoice == "Rock" && cpuChoice == R.drawable.rock || playerChoice == "Paper" && cpuChoice == R.drawable.paper || playerChoice == "Scissors" && cpuChoice == R.drawable.scissors ) {
+                    Text(text = itsTieMessage, fontSize = defaultFontSize, color = Color(0xFFFA5800))}
+
+                // Player Win.
+                else if (playerChoice == "Rock" && cpuChoice == R.drawable.scissors || playerChoice == "Paper" && cpuChoice == R.drawable.rock || playerChoice == "Scissors" && cpuChoice == R.drawable.paper) {
+                    Text(text = playerWinMessage, fontSize = defaultFontSize, color = Color.Blue)}
+
+                // CPU Win.
+                else if (cpuChoice == R.drawable.rock && playerChoice == "Scissors" || cpuChoice == R.drawable.paper && playerChoice == "Rock" || cpuChoice == R.drawable.scissors && playerChoice == "Paper") {
+                    Text(text = cpuWinMessage, fontSize = defaultFontSize, color = Color.Red)}
             }
         }
 
