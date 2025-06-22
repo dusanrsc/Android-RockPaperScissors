@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -38,6 +39,11 @@ fun Game(
     var showRockButton by remember { mutableStateOf(true) }
     var showPaperButton by remember { mutableStateOf(true) }
     var showScissorsButton by remember { mutableStateOf(true) }
+    var allowCounter by remember { mutableStateOf(false) }
+
+    var playerWinCounter by remember { mutableStateOf(0) }
+    var cpuWinCounter by remember { mutableStateOf(0) }
+    var tieCounter by remember { mutableStateOf(0) }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val CPUImageSize = screenWidth / 2
@@ -61,6 +67,7 @@ fun Game(
                 .fillMaxWidth()
                 .background(Color.Red)
         ) {
+            Text(modifier = Modifier.padding(8.dp), text = "Win: ${cpuWinCounter}", fontSize = defaultFontSize, color = Color.White)
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -123,6 +130,7 @@ fun Game(
                 .fillMaxWidth()
                 .background(Color.Blue)
         ) {
+            Text(modifier = Modifier.padding(8.dp), text = "Win: ${playerWinCounter}", fontSize = defaultFontSize, color = Color.White)
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -139,6 +147,11 @@ fun Game(
                             .clickable {
                                 if (playerChoice != "") {
                                     resetGame()
+                                    allowCounter = true
+
+                                    if (allowCounter) {
+                                        playerWinCounter++
+                                    }
                                 } else {
                                     playerChoice = "Rock"
                                     showRockButton = true
