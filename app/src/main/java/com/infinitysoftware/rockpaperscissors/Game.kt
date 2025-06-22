@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -13,14 +12,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// Messages.
-val itsTieMessage: String = "ITS TIE!"
-val playerWinMessage: String = "PLAYER WIN!"
-val cpuWinMessage: String = "CPU WIN!"
+// Game Messages.
+val itsTieMessage = "ITS TIE!"
+val playerWinMessage = "PLAYER WIN!"
+val cpuWinMessage = "CPU WIN!"
 
 @Preview(showBackground = true)
 @Composable
@@ -29,9 +29,9 @@ fun FunctionPreviewer() {
 }
 
 @Composable
-fun Game(
-    defaultFontSize: TextUnit = 30.sp,
-) {
+fun Game(defaultFontSize: TextUnit = 30.sp) {
+
+    // Game State Variables.
     val choiceList = listOf(R.drawable.rock, R.drawable.paper, R.drawable.scissors)
     var cpuChoice by remember { mutableStateOf(choiceList.random()) }
     var playerChoice by remember { mutableStateOf("") }
@@ -39,17 +39,15 @@ fun Game(
     var showRockButton by remember { mutableStateOf(true) }
     var showPaperButton by remember { mutableStateOf(true) }
     var showScissorsButton by remember { mutableStateOf(true) }
-    var allowCounter by remember { mutableStateOf(false) }
 
     var playerWinCounter by remember { mutableStateOf(0) }
     var cpuWinCounter by remember { mutableStateOf(0) }
-    var tieCounter by remember { mutableStateOf(0) }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val CPUImageSize = screenWidth / 2
     val PlayerImageSize = screenWidth / 4
 
-    // Inner/Local Functions Section.
+    // Function To Reset The Game State.
     fun resetGame() {
         playerChoice = ""
         cpuChoice = choiceList.random()
@@ -60,14 +58,22 @@ fun Game(
 
     Column(modifier = Modifier.fillMaxSize()) {
 
-        // Top
+        // Top Section. Shows CPU Image And Score.
         Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .background(Color.Red)
         ) {
-            Text(modifier = Modifier.padding(8.dp), text = "Win: ${cpuWinCounter}", fontSize = defaultFontSize, color = Color.White)
+            Text(
+                text = "Win: $cpuWinCounter",
+                fontSize = defaultFontSize,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(8.dp)
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxSize()
@@ -75,7 +81,7 @@ fun Game(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                val imageId = if (playerChoice == "") R.drawable.background else cpuChoice
+                val imageId = if (playerChoice.isEmpty()) R.drawable.background else cpuChoice
                 Image(
                     painter = painterResource(id = imageId),
                     contentDescription = "CPU's Choice",
@@ -84,19 +90,20 @@ fun Game(
             }
         }
 
-        // Middle Text Box
+        // Middle Section. Displays Result Text Based On Choices.
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White),
             contentAlignment = Alignment.Center
         ) {
-            if (playerChoice == "") {
-                Text(text = "UNDEFINED WINNER!", fontSize = defaultFontSize, color = Color.White)
+            if (playerChoice.isEmpty()) {
+                Text("UNDEFINED WINNER!", fontSize = defaultFontSize, color = Color.White)
             } else {
                 val resultText: String
                 val resultColor: Color
 
+                // Check For Game Outcome.
                 if (
                     (playerChoice == "Rock" && cpuChoice == R.drawable.rock) ||
                     (playerChoice == "Paper" && cpuChoice == R.drawable.paper) ||
@@ -104,7 +111,6 @@ fun Game(
                 ) {
                     resultText = itsTieMessage
                     resultColor = Color(0xFFFAC400)
-
                 } else if (
                     (playerChoice == "Rock" && cpuChoice == R.drawable.scissors) ||
                     (playerChoice == "Paper" && cpuChoice == R.drawable.rock) ||
@@ -118,19 +124,27 @@ fun Game(
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Text(text = resultText, fontSize = defaultFontSize, color = resultColor)
+                    Text(resultText, fontSize = defaultFontSize, color = resultColor)
                 }
             }
         }
 
-        // Bottom
+        // Bottom Section. Shows Player Choices And Player Score.
         Box(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
                 .background(Color.Blue)
         ) {
-            Text(modifier = Modifier.padding(8.dp), text = "Win: ${playerWinCounter}", fontSize = defaultFontSize, color = Color.White)
+            Text(
+                text = "Win: $playerWinCounter",
+                fontSize = defaultFontSize,
+                color = Color.White,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(8.dp)
+            )
+
             Row(
                 modifier = Modifier
                     .fillMaxSize()
@@ -139,67 +153,78 @@ fun Game(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (showRockButton) {
-                    Image(
-                        painter = painterResource(id = R.drawable.rock),
-                        contentDescription = "Rock",
-                        modifier = Modifier
-                            .size(PlayerImageSize)
-                            .clickable {
-                                if (playerChoice != "") {
-                                    resetGame()
-                                    allowCounter = true
-
-                                    if (allowCounter) {
-                                        playerWinCounter++
-                                    }
-                                } else {
-                                    playerChoice = "Rock"
-                                    showRockButton = true
-                                    showPaperButton = false
-                                    showScissorsButton = false
-                                }
-                            }
+                    ChoiceImage(
+                        id = R.drawable.rock,
+                        label = "Rock",
+                        size = PlayerImageSize,
+                        currentChoice = playerChoice,
+                        onSelect = {
+                            playerChoice = "Rock"
+                            showPaperButton = false
+                            showScissorsButton = false
+                        },
+                        onReset = {
+                            resetGame()
+                            playerWinCounter++
+                        }
                     )
                 }
 
                 if (showPaperButton) {
-                    Image(
-                        painter = painterResource(id = R.drawable.paper),
-                        contentDescription = "Paper",
-                        modifier = Modifier
-                            .size(PlayerImageSize)
-                            .clickable {
-                                if (playerChoice != "") {
-                                    resetGame()
-                                } else {
-                                    playerChoice = "Paper"
-                                    showRockButton = false
-                                    showPaperButton = true
-                                    showScissorsButton = false
-                                }
-                            }
+                    ChoiceImage(
+                        id = R.drawable.paper,
+                        label = "Paper",
+                        size = PlayerImageSize,
+                        currentChoice = playerChoice,
+                        onSelect = {
+                            playerChoice = "Paper"
+                            showRockButton = false
+                            showScissorsButton = false
+                        },
+                        onReset = { resetGame() }
                     )
                 }
 
                 if (showScissorsButton) {
-                    Image(
-                        painter = painterResource(id = R.drawable.scissors),
-                        contentDescription = "Scissors",
-                        modifier = Modifier
-                            .size(PlayerImageSize)
-                            .clickable {
-                                if (playerChoice != "") {
-                                    resetGame()
-                                } else {
-                                    playerChoice = "Scissors"
-                                    showRockButton = false
-                                    showPaperButton = false
-                                    showScissorsButton = true
-                                }
-                            }
+                    ChoiceImage(
+                        id = R.drawable.scissors,
+                        label = "Scissors",
+                        size = PlayerImageSize,
+                        currentChoice = playerChoice,
+                        onSelect = {
+                            playerChoice = "Scissors"
+                            showRockButton = false
+                            showPaperButton = false
+                        },
+                        onReset = { resetGame() }
                     )
                 }
             }
         }
     }
+}
+
+@Composable
+fun ChoiceImage(
+    id: Int,
+    label: String,
+    size: Dp,
+    currentChoice: String,
+    onSelect: () -> Unit,
+    onReset: () -> Unit
+) {
+    // Image Button For Player Choice.
+    Image(
+        painter = painterResource(id = id),
+        contentDescription = label,
+        modifier = Modifier
+            .size(size)
+            .clickable {
+                if (currentChoice.isNotEmpty()) {
+                    onReset()
+                } else {
+                    onSelect()
+                }
+            }
+    )
 }
