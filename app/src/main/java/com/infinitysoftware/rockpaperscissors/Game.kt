@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.infinitysoftware.rockpaperscissors.ui.theme.TieYellow
 
 // Game Messages.
 val itsTieMessage = "ITS TIE!"
@@ -43,6 +44,8 @@ fun Game(defaultFontSize: TextUnit = 30.sp) {
     var playerWinCounter by remember { mutableStateOf(0) }
     var cpuWinCounter by remember { mutableStateOf(0) }
 
+    var allowCounter by remember { mutableStateOf(false) }
+
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
     val CPUImageSize = screenWidth / 2
     val PlayerImageSize = screenWidth / 4
@@ -54,6 +57,7 @@ fun Game(defaultFontSize: TextUnit = 30.sp) {
         showRockButton = true
         showPaperButton = true
         showScissorsButton = true
+        allowCounter = false
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -110,7 +114,7 @@ fun Game(defaultFontSize: TextUnit = 30.sp) {
                     (playerChoice == "Scissors" && cpuChoice == R.drawable.scissors)
                 ) {
                     resultText = itsTieMessage
-                    resultColor = Color(0xFFFAC400)
+                    resultColor = TieYellow
                 } else if (
                     (playerChoice == "Rock" && cpuChoice == R.drawable.scissors) ||
                     (playerChoice == "Paper" && cpuChoice == R.drawable.rock) ||
@@ -121,6 +125,24 @@ fun Game(defaultFontSize: TextUnit = 30.sp) {
                 } else {
                     resultText = cpuWinMessage
                     resultColor = Color.Red
+                }
+
+                // Add Points Only Once Per Game.
+                if (!allowCounter && playerChoice.isNotEmpty()) {
+                    if (
+                        (playerChoice == "Rock" && cpuChoice == R.drawable.scissors) ||
+                        (playerChoice == "Paper" && cpuChoice == R.drawable.rock) ||
+                        (playerChoice == "Scissors" && cpuChoice == R.drawable.paper)
+                    ) {
+                        playerWinCounter++
+                    } else if (
+                        (playerChoice == "Rock" && cpuChoice == R.drawable.paper) ||
+                        (playerChoice == "Paper" && cpuChoice == R.drawable.scissors) ||
+                        (playerChoice == "Scissors" && cpuChoice == R.drawable.rock)
+                    ) {
+                        cpuWinCounter++
+                    }
+                    allowCounter = true
                 }
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -165,7 +187,6 @@ fun Game(defaultFontSize: TextUnit = 30.sp) {
                         },
                         onReset = {
                             resetGame()
-                            playerWinCounter++
                         }
                     )
                 }
@@ -181,7 +202,9 @@ fun Game(defaultFontSize: TextUnit = 30.sp) {
                             showRockButton = false
                             showScissorsButton = false
                         },
-                        onReset = { resetGame() }
+                        onReset = {
+                            resetGame()
+                        }
                     )
                 }
 
@@ -196,7 +219,9 @@ fun Game(defaultFontSize: TextUnit = 30.sp) {
                             showRockButton = false
                             showPaperButton = false
                         },
-                        onReset = { resetGame() }
+                        onReset = {
+                            resetGame()
+                        }
                     )
                 }
             }
