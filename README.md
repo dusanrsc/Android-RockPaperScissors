@@ -1,5 +1,6 @@
 # Rock Paper Scissors Application For Android With Jetpack Compose!
-# Almost Done!
+
+# While Learning!
 
 # Screenshots:
 <div class="container" align="center">
